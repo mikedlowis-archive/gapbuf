@@ -56,12 +56,15 @@ void buf_init(Buf* buf, void (*errfn)(char*)) {
     buf->undo        = NULL;
     buf->redo        = NULL;
     buf->errfn       = errfn;
+    buf->path        = NULL;
     assert(buf->bufstart);
 }
 
 void buf_load(Buf* buf, Sel* sel, char* path) {
     /* process the file path and address */
-    if (path && path[0] == '.' && path[1] == '/')
+    if (sel) *sel = (Sel){0};
+    if (!path) return;
+    if (path[0] == '.' && path[1] == '/')
         path += 2;
     buf->path = strdup(path);
     char* addr = strrchr(buf->path, ':');
@@ -84,7 +87,6 @@ void buf_load(Buf* buf, Sel* sel, char* path) {
         if (nread < 0) die("read() :");
     }
     if (fd > 0) close(fd);
-    if (sel) *sel = (Sel){0};
 }
 
 void buf_reload(Buf* buf) {

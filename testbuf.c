@@ -47,6 +47,7 @@ TEST_SUITE(BufferTests) {
     TEST(buf_init should initialize an empty buffer) {
         Buf buf = {0};
         buf_init(&buf, (void*)0x12345678);
+        CHECK(buf.path        == NULL);
         CHECK(buf.modified    == false);
         CHECK(buf.expand_tabs == CfgExpandTabs);
         CHECK(buf.crlf        == 0);
@@ -65,6 +66,7 @@ TEST_SUITE(BufferTests) {
         buf_init(&buf, onerror);
         buf_putc(&buf, false, 0, 'a');
         buf_init(&buf, (void*)0x12345678);
+        CHECK(buf.path        == NULL);
         CHECK(buf.modified    == false);
         CHECK(buf.expand_tabs == CfgExpandTabs);
         CHECK(buf.crlf        == 0);
@@ -126,6 +128,51 @@ TEST_SUITE(BufferTests) {
         CHECK(!strcmp(TestBuf.path, "testdocs/lorem.txt"));
     }
 
+    TEST(buf_load should handle non-existent paths) {
+        Sel sel;
+        buf_init(&TestBuf, NULL);
+        buf_load(&TestBuf, &sel, "nonexistent.txt");
+        CHECK(sel.end             == 0);
+        CHECK(TestBuf.modified    == false);
+        CHECK(TestBuf.expand_tabs == true);
+        CHECK(TestBuf.crlf        == 0);
+        CHECK(TestBuf.bufsize     == sysconf(_SC_PAGE_SIZE));
+        CHECK(TestBuf.undo        == NULL);
+        CHECK(TestBuf.redo        == NULL);
+        CHECK(TestBuf.errfn       == NULL);
+        CHECK(!strcmp(TestBuf.path, "nonexistent.txt"));
+    }
+
+    TEST(buf_load should handle NULL for selection) {
+        Sel sel;
+        buf_init(&TestBuf, NULL);
+        buf_load(&TestBuf, NULL, "nonexistent.txt");
+        CHECK(sel.end             == 0);
+        CHECK(TestBuf.modified    == false);
+        CHECK(TestBuf.expand_tabs == true);
+        CHECK(TestBuf.crlf        == 0);
+        CHECK(TestBuf.bufsize     == sysconf(_SC_PAGE_SIZE));
+        CHECK(TestBuf.undo        == NULL);
+        CHECK(TestBuf.redo        == NULL);
+        CHECK(TestBuf.errfn       == NULL);
+        CHECK(!strcmp(TestBuf.path, "nonexistent.txt"));
+    }
+
+    TEST(buf_load should handle NULL for path) {
+        Sel sel;
+        buf_init(&TestBuf, NULL);
+        buf_load(&TestBuf, NULL, NULL);
+        CHECK(sel.end             == 0);
+        CHECK(TestBuf.modified    == false);
+        CHECK(TestBuf.expand_tabs == true);
+        CHECK(TestBuf.crlf        == 0);
+        CHECK(TestBuf.bufsize     == sysconf(_SC_PAGE_SIZE));
+        CHECK(TestBuf.undo        == NULL);
+        CHECK(TestBuf.redo        == NULL);
+        CHECK(TestBuf.errfn       == NULL);
+        CHECK(TestBuf.path        == NULL);
+    }
+
     TEST(buf_reload should reload the file from disk) {
         Sel sel;
         buf_init(&TestBuf, NULL);
@@ -141,22 +188,6 @@ TEST_SUITE(BufferTests) {
         CHECK(TestBuf.redo        == NULL);
         CHECK(TestBuf.errfn       == NULL);
         CHECK(!strcmp(TestBuf.path, "testdocs/lorem.txt"));
-    }
-
-    TEST(buf_load should handle non-existent paths) {
-        Sel sel;
-        buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, &sel, "nonexistent.txt");
-        buf_reload(&TestBuf);
-        CHECK(sel.end             == 0);
-        CHECK(TestBuf.modified    == false);
-        CHECK(TestBuf.expand_tabs == true);
-        CHECK(TestBuf.crlf        == 0);
-        CHECK(TestBuf.bufsize     == sysconf(_SC_PAGE_SIZE));
-        CHECK(TestBuf.undo        == NULL);
-        CHECK(TestBuf.redo        == NULL);
-        CHECK(TestBuf.errfn       == NULL);
-        CHECK(!strcmp(TestBuf.path, "nonexistent.txt"));
     }
 
 #if 0
