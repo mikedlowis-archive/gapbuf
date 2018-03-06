@@ -11,29 +11,22 @@
 #include <fcntl.h>
 #include <time.h>
 
-int CfgTabWidth = 4;
-int CfgExpandTabs = true;
-
 /******************************************************************************/
 
+static void* emalloc(size_t sz) {
+    void* ptr = malloc(sz);
+    if (NULL == ptr) {
+        perror("malloc() :");
+        exit(1);
+    }
+    return ptr;
+}
+
 static size_t pagealign(size_t sz) {
-    size_t pgsize = sysconf(_SC_PAGE_SIZE);
-    size_t alignmask = pgsize - 1;
+    size_t pgsize = sysconf(_SC_PAGE_SIZE), alignmask = pgsize - 1;
     if (sz & alignmask)
         sz += pgsize - (sz & alignmask);
     return sz;
-}
-
-void die(const char* msgfmt, ...) {
-    va_list args;
-    va_start(args, msgfmt);
-    fprintf(stderr, "error: ");
-    vfprintf(stderr, msgfmt, args);
-    va_end(args);
-    if (*msgfmt && msgfmt[strlen(msgfmt)-1] == ':')
-        fprintf(stderr, " %s", strerror(errno));
-    fprintf(stderr, "\n");
-    exit(EXIT_FAILURE);
 }
 
 /******************************************************************************/
@@ -46,10 +39,10 @@ void buf_init(Buf* buf, void (*errfn)(char*)) {
     }
     /* reset the state to defaults */
     buf->modified    = false;
-    buf->expand_tabs = CfgExpandTabs;
+    buf->expand_tabs = true;
     buf->crlf        = 0;
     buf->bufsize     = pagealign(1);
-    buf->bufstart    = malloc(buf->bufsize * sizeof(Rune));
+    buf->bufstart    = emalloc(buf->bufsize * sizeof(Rune));
     buf->bufend      = buf->bufstart + buf->bufsize;
     buf->gapstart    = buf->bufstart;
     buf->gapend      = buf->bufend;
@@ -57,7 +50,6 @@ void buf_init(Buf* buf, void (*errfn)(char*)) {
     buf->redo        = NULL;
     buf->errfn       = errfn;
     buf->path        = NULL;
-    assert(buf->bufstart);
 }
 
 void buf_load(Buf* buf, Sel* sel, char* path) {
@@ -80,11 +72,10 @@ void buf_load(Buf* buf, Sel* sel, char* path) {
         buf->bufend   = buf->bufstart + buf->bufsize;
         buf->gapstart = buf->bufstart;
         buf->gapend   = buf->bufend;
-        if (!buf->bufstart) die("malloc() :");
         /* Read the file into the buffer */
         while (sb.st_size && (nread = read(fd, buf->gapstart, sb.st_size)) > 0)
             buf->gapstart += nread, sb.st_size -= nread;
-        if (nread < 0) die("read() :");
+        if (nread < 0) buf->errfn("Failed to read file");
     }
     if (fd > 0) close(fd);
 }

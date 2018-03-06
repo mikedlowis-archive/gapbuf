@@ -5,11 +5,6 @@
 #include <edit.h>
 #include <unistd.h>
 
-extern int CfgTabWidth;
-extern int CfgExpandTabs;
-extern int CfgCopyIndent;
-
-
 static Buf TestBuf;
 
 static void onerror(char* msg) {
@@ -49,7 +44,7 @@ TEST_SUITE(BufferTests) {
         buf_init(&buf, (void*)0x12345678);
         CHECK(buf.path        == NULL);
         CHECK(buf.modified    == false);
-        CHECK(buf.expand_tabs == CfgExpandTabs);
+        CHECK(buf.expand_tabs == true);
         CHECK(buf.crlf        == 0);
         CHECK(buf.bufsize     == sysconf(_SC_PAGE_SIZE));
         CHECK(buf.bufstart    != NULL);
@@ -68,7 +63,7 @@ TEST_SUITE(BufferTests) {
         buf_init(&buf, (void*)0x12345678);
         CHECK(buf.path        == NULL);
         CHECK(buf.modified    == false);
-        CHECK(buf.expand_tabs == CfgExpandTabs);
+        CHECK(buf.expand_tabs == true);
         CHECK(buf.crlf        == 0);
         CHECK(buf.bufsize     == sysconf(_SC_PAGE_SIZE));
         CHECK(buf.bufstart    != NULL);
@@ -248,8 +243,11 @@ TEST_SUITE(BufferTests) {
         CHECK(end == buf_last(&TestBuf));
         CHECK(TestBuf.modified == false);
     }
+#endif
+    /* Access
+     *************************************************************************/
 
-
+#if 0
     /* Insertions
      *************************************************************************/
     TEST(buf_putc should insert at 0 in empty buf) {
