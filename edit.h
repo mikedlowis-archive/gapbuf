@@ -1,11 +1,3 @@
-/* Utility Functions
- *****************************************************************************/
-/* Memory-mapped file representation */
-typedef struct {
-    uint8_t* buf; /* memory mapped byte buffer */
-    size_t len;   /* length of the buffer */
-} FMap;
-
 /* Buffer management functions
  *****************************************************************************/
 /* undo/redo list item */
@@ -26,6 +18,13 @@ typedef struct Log {
     } data;
 } Log;
 
+/* cursor/selection representation */
+typedef struct {
+    size_t beg;
+    size_t end;
+    size_t col;
+} Sel;
+
 /* gap buffer main data structure */
 typedef struct {
     char* path;           /* the path to the open file */
@@ -42,14 +41,8 @@ typedef struct {
     bool expand_tabs;     /* tracks current mode */
     uint transid;         /* tracks the last used transaction id for log entries */
     void (*errfn)(char*); /* callback for error messages */
+    Sel selection;
 } Buf;
-
-/* cursor/selection representation */
-typedef struct {
-    size_t beg;
-    size_t end;
-    size_t col;
-} Sel;
 
 enum {
     LEFT  = -1,
@@ -62,7 +55,6 @@ void buf_init(Buf* buf, void (*errfn)(char*));
 void buf_load(Buf* buf, Sel* sel, char* path);
 void buf_reload(Buf* buf);
 void buf_save(Buf* buf);
-
 Rune buf_getc(Buf* buf, Sel* sel);
 void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts);
 void buf_last(Buf* buf, Sel* sel);

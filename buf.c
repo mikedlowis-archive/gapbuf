@@ -29,6 +29,22 @@ static size_t pagealign(size_t sz) {
     return sz;
 }
 
+static Sel selconvert(Buf* buf, Sel* sel) {
+    if (!sel) sel = &(buf->selection);
+    if (sel->end < sel->beg)
+        return (Sel){ .beg = sel->end, .end = sel->beg, .col = sel->col };
+    else
+        return (Sel){ .beg = sel->beg, .end = sel->end, .col = sel->col };
+}
+
+static void selupdate(Buf* buf, Sel* dest, Sel* src) {
+    if (!dest) dest = &(buf->selection);
+    if (dest->end < dest->beg)
+        dest->beg = src->end, dest->end = src->beg, dest->col = src->col;
+    else
+        dest->beg = src->beg, dest->end = src->end, dest->col = src->col;
+}
+
 /******************************************************************************/
 
 void buf_init(Buf* buf, void (*errfn)(char*)) {
@@ -110,11 +126,14 @@ void buf_save(Buf* buf) {
 
 Rune buf_getc(Buf* buf, Sel* sel)
 {
+    Sel lsel = selconvert(buf, sel);
     return 0;
 }
 
 void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts)
 {
+    Sel lsel = selconvert(buf, sel);
+    selupdate(buf, sel, &lsel);
 }
 
 void buf_last(Buf* buf, Sel* sel)
