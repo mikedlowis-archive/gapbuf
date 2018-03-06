@@ -97,6 +97,24 @@ void buf_reload(Buf* buf) {
 }
 
 void buf_save(Buf* buf) {
+    char* wptr;
+    long fd, nwrite, towrite;
+    if (buf->path && (fd = open(buf->path, O_WRONLY|O_CREAT, 0644)) >= 0) {
+        /* write the chunk before the gap */
+        wptr = buf->bufstart, towrite = (buf->gapstart - buf->bufstart);
+        while (towrite && ((nwrite = write(fd, wptr, towrite)) > 0))
+            wptr += nwrite, towrite -= nwrite;
+        /* write the chunk after the gap */
+        wptr = buf->gapend, towrite = (buf->bufend - buf->gapend);
+        while (towrite && ((nwrite = write(fd, wptr, towrite)) > 0))
+            wptr += nwrite, towrite -= nwrite;
+        close(fd);
+        /* report success or failure */
+        if (nwrite >= 0)
+            buf->modified = false;
+        else
+            buf->errfn("Failed to write file");
+    }
 }
 
 Rune buf_getc(Buf* buf, Sel* sel)

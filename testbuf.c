@@ -190,12 +190,11 @@ TEST_SUITE(BufferTests) {
         CHECK(!strcmp(TestBuf.path, "testdocs/lorem.txt"));
     }
 
-#if 0
     /* Saving
      *************************************************************************/
     TEST(buf_save should save a UTF-8 file to disk) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/lorem.txt");
+        buf_load(&TestBuf, NULL, "testdocs/lorem.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -203,7 +202,7 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a non UTF-8 file to disk) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/waf");
+        buf_load(&TestBuf, NULL, "testdocs/waf");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -211,7 +210,7 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a file to disk with unix line endings) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/lf.txt");
+        buf_load(&TestBuf, NULL, "testdocs/lf.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -219,15 +218,16 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a file to disk with dos line endings) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/crlf.txt");
+        buf_load(&TestBuf, NULL, "testdocs/crlf.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
     }
 
+#if 0
     TEST(buf_save should make sure unix file ends witn newline) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/lf.txt");
+        buf_load(&TestBuf, NULL, "testdocs/lf.txt");
         TestBuf.modified = true;
         size_t end = buf_last(&TestBuf);
         buf_delete(&TestBuf, end-1, end);
@@ -237,9 +237,9 @@ TEST_SUITE(BufferTests) {
         CHECK(TestBuf.modified == false);
     }
 
-    TEST(buf_save should make sure dos file ends witn newline) {
+    TEST(buf_save should make sure dos file ends with newline) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, "testdocs/crlf.txt");
+        buf_load(&TestBuf, NULL, "testdocs/crlf.txt");
         TestBuf.modified = true;
         size_t end = buf_last(&TestBuf);
         buf_delete(&TestBuf, end-1, end);
@@ -248,6 +248,7 @@ TEST_SUITE(BufferTests) {
         CHECK(end == buf_last(&TestBuf));
         CHECK(TestBuf.modified == false);
     }
+
 
     /* Insertions
      *************************************************************************/
