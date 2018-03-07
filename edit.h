@@ -41,21 +41,14 @@ typedef struct {
     bool expand_tabs;     /* tracks current mode */
     uint transid;         /* tracks the last used transaction id for log entries */
     void (*errfn)(char*); /* callback for error messages */
-    Sel selection;
+    Sel selection;        /* current selection */
 } Buf;
 
-enum {
-    LEFT  = -1,
-    RIGHT = +1,
-    UP    = -1,
-    DOWN  = +1
-};
-
 void buf_init(Buf* buf, void (*errfn)(char*));
-void buf_load(Buf* buf, Sel* sel, char* path);
+void buf_load(Buf* buf, char* path);
 void buf_reload(Buf* buf);
 void buf_save(Buf* buf);
-Rune buf_getc(Buf* buf, Sel* sel);
+int buf_getc(Buf* buf, Sel* sel);
 void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts);
 void buf_last(Buf* buf, Sel* sel);
 

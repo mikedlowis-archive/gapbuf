@@ -54,23 +54,18 @@ void buf_init(Buf* buf, void (*errfn)(char*)) {
         buf->bufstart = NULL;
     }
     /* reset the state to defaults */
-    buf->modified    = false;
+    memset(buf, 0, sizeof(Buf));
     buf->expand_tabs = true;
-    buf->crlf        = 0;
     buf->bufsize     = pagealign(1);
     buf->bufstart    = emalloc(buf->bufsize * sizeof(Rune));
     buf->bufend      = buf->bufstart + buf->bufsize;
     buf->gapstart    = buf->bufstart;
     buf->gapend      = buf->bufend;
-    buf->undo        = NULL;
-    buf->redo        = NULL;
     buf->errfn       = errfn;
-    buf->path        = NULL;
 }
 
-void buf_load(Buf* buf, Sel* sel, char* path) {
+void buf_load(Buf* buf, char* path) {
     /* process the file path and address */
-    if (sel) *sel = (Sel){0};
     if (!path) return;
     if (path[0] == '.' && path[1] == '/')
         path += 2;
@@ -100,7 +95,7 @@ void buf_reload(Buf* buf) {
     void (*errfn)(char*) = buf->errfn;
     char* path = buf->path;
     buf_init(buf, errfn);
-    buf_load(buf, NULL, path);
+    buf_load(buf, path);
 }
 
 void buf_save(Buf* buf) {
@@ -124,18 +119,15 @@ void buf_save(Buf* buf) {
     }
 }
 
-Rune buf_getc(Buf* buf, Sel* sel)
-{
+int buf_getc(Buf* buf, Sel* sel) {
     Sel lsel = selconvert(buf, sel);
     return 0;
 }
 
-void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts)
-{
+void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts) {
     Sel lsel = selconvert(buf, sel);
     selupdate(buf, sel, &lsel);
 }
 
-void buf_last(Buf* buf, Sel* sel)
-{
+void buf_last(Buf* buf, Sel* sel) {
 }

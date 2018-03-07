@@ -78,10 +78,8 @@ TEST_SUITE(BufferTests) {
     /* Loading
      *************************************************************************/
     TEST(buf_load should load a UTF-8 file from disk) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "testdocs/lorem.txt");
-        CHECK(sel.end             == 0);
+        buf_load(&TestBuf, "testdocs/lorem.txt");
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -94,10 +92,8 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_load should load a file from disk and jump to a specific line) {
         IGNORE("Jumping to a specific line is not implemented yet.");
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, &sel, "testdocs/lorem.txt:2");
-        CHECK(sel.end             == 70);
+        buf_load(&TestBuf, "testdocs/lorem.txt:2");
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -109,10 +105,8 @@ TEST_SUITE(BufferTests) {
     }
 
     TEST(buf_load should remove ./ from file path) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, &sel, "./testdocs/lorem.txt");
-        CHECK(sel.end             == 0);
+        buf_load(&TestBuf, "./testdocs/lorem.txt");
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -124,10 +118,8 @@ TEST_SUITE(BufferTests) {
     }
 
     TEST(buf_load should handle non-existent paths) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, &sel, "nonexistent.txt");
-        CHECK(sel.end             == 0);
+        buf_load(&TestBuf, "nonexistent.txt");
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -139,10 +131,8 @@ TEST_SUITE(BufferTests) {
     }
 
     TEST(buf_load should handle NULL for selection) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "nonexistent.txt");
-        CHECK(sel.end             == 0);
+        buf_load(&TestBuf, "nonexistent.txt");
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -154,10 +144,8 @@ TEST_SUITE(BufferTests) {
     }
 
     TEST(buf_load should handle NULL for path) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, NULL);
-        CHECK(sel.end             == 0);
+        buf_load(&TestBuf, NULL);
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -169,12 +157,10 @@ TEST_SUITE(BufferTests) {
     }
 
     TEST(buf_reload should reload the file from disk) {
-        Sel sel;
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, &sel, "testdocs/waf");
+        buf_load(&TestBuf, "testdocs/waf");
         TestBuf.path = "testdocs/lorem.txt";
         buf_reload(&TestBuf);
-        CHECK(sel.end             == 0);
         CHECK(TestBuf.modified    == false);
         CHECK(TestBuf.expand_tabs == true);
         CHECK(TestBuf.crlf        == 0);
@@ -189,7 +175,7 @@ TEST_SUITE(BufferTests) {
      *************************************************************************/
     TEST(buf_save should save a UTF-8 file to disk) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "testdocs/lorem.txt");
+        buf_load(&TestBuf, "testdocs/lorem.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -197,7 +183,7 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a non UTF-8 file to disk) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "testdocs/waf");
+        buf_load(&TestBuf, "testdocs/waf");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -205,7 +191,7 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a file to disk with unix line endings) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "testdocs/lf.txt");
+        buf_load(&TestBuf, "testdocs/lf.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
@@ -213,7 +199,7 @@ TEST_SUITE(BufferTests) {
 
     TEST(buf_save should save a file to disk with dos line endings) {
         buf_init(&TestBuf, NULL);
-        buf_load(&TestBuf, NULL, "testdocs/crlf.txt");
+        buf_load(&TestBuf, "testdocs/crlf.txt");
         TestBuf.modified = true;
         buf_save(&TestBuf);
         CHECK(TestBuf.modified == false);
