@@ -52,9 +52,10 @@ void buf_del(Buf* buf, Sel* sel);
 int buf_getc(Buf* buf, Sel* sel);
 void buf_putc(Buf* buf, Sel* sel, int rune, int fmtopts);
 void buf_puts(Buf* buf, Sel* sel, char* str, int fmtopts);
-void buf_last(Buf* buf, Sel* sel);
+size_t buf_size(Buf* buf);
 
 #if 0
+void buf_last(Buf* buf, Sel* sel);
 void buf_chomp(Buf* buf);
 void buf_undo(Buf* buf, Sel* sel);
 void buf_redo(Buf* buf, Sel* sel);

@@ -39,6 +39,16 @@ static void selupdate(Buf* buf, Sel* dest, Sel* src) {
         dest->beg = src->beg, dest->end = src->end, dest->col = src->col;
 }
 
+static char getb(Buf* buf, Sel* sel) {
+    char* ptr = buf->bufstart + sel->end;
+    if (ptr >= buf->gapstart)
+        ptr += (buf->gapend - buf->gapstart);
+    return *ptr;
+}
+
+static void syncgap(Buf* buf, Sel* sel) {
+}
+
 /******************************************************************************/
 
 void buf_init(Buf* buf, void (*errfn)(char*)) {
@@ -115,7 +125,7 @@ void buf_save(Buf* buf) {
 
 int buf_getc(Buf* buf, Sel* sel) {
     Sel lsel = selconvert(buf, sel);
-    return 0;
+    return getb(buf, &lsel);
 }
 
 void buf_putc(Buf* buf, Sel* sel, int rune, int fmtopts) {
@@ -125,12 +135,17 @@ void buf_putc(Buf* buf, Sel* sel, int rune, int fmtopts) {
 
 void buf_puts(Buf* buf, Sel* sel, char* str, int fmtopts) {
     Sel lsel = selconvert(buf, sel);
+    syncgap(buf, &lsel);
     selupdate(buf, sel, &lsel);
 }
 
-void buf_last(Buf* buf, Sel* sel) {
+void buf_del(Buf* buf, Sel* sel) {
+    Sel lsel = selconvert(buf, sel);
+    syncgap(buf, &lsel);
+    selupdate(buf, sel, &lsel);
 }
 
-void buf_del(Buf* buf, Sel* sel) {
+size_t buf_size(Buf* buf) {
+    return (buf->bufend - buf->bufstart) - (buf->gapend - buf->gapstart);
 }
 
