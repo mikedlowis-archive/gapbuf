@@ -13,7 +13,7 @@ typedef struct Log {
         struct {
             size_t off;  /* offset in the file where the deletion occurred */
             size_t len;  /* number of runes deleted */
-            Rune* runes; /* array of runes containing deleted content */
+            char* runes; /* deleted content */
         } del;
     } data;
 } Log;
@@ -48,17 +48,13 @@ void buf_init(Buf* buf, void (*errfn)(char*));
 void buf_load(Buf* buf, char* path);
 void buf_reload(Buf* buf);
 void buf_save(Buf* buf);
+void buf_del(Buf* buf, Sel* sel);
 int buf_getc(Buf* buf, Sel* sel);
-void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts);
+void buf_putc(Buf* buf, Sel* sel, int rune, int fmtopts);
+void buf_puts(Buf* buf, Sel* sel, char* str, int fmtopts);
 void buf_last(Buf* buf, Sel* sel);
 
 #if 0
-Rune buf_get(Buf* buf, size_t pos);
-size_t buf_end(Buf* buf);
-size_t buf_insert(Buf* buf, bool indent, size_t off, Rune rune);
-size_t buf_delete(Buf* buf, size_t beg, size_t end);
-size_t buf_change(Buf* buf, size_t beg, size_t end);
-
 void buf_chomp(Buf* buf);
 void buf_undo(Buf* buf, Sel* sel);
 void buf_redo(Buf* buf, Sel* sel);

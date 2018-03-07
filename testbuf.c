@@ -1,7 +1,6 @@
 #define INCLUDE_DEFS
-#include <atf.h>
 #include <stdc.h>
-#include <utf.h>
+#include <atf.h>
 #include <edit.h>
 #include <unistd.h>
 

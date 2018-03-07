@@ -1,15 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdc.h>
-#include <utf.h>
 #include <edit.h>
-#include <wchar.h>
-#include <ctype.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <sys/time.h>
 #include <fcntl.h>
-#include <time.h>
+#include <sys/stat.h>
 
 /******************************************************************************/
 
@@ -57,7 +51,7 @@ void buf_init(Buf* buf, void (*errfn)(char*)) {
     memset(buf, 0, sizeof(Buf));
     buf->expand_tabs = true;
     buf->bufsize     = pagealign(1);
-    buf->bufstart    = emalloc(buf->bufsize * sizeof(Rune));
+    buf->bufstart    = emalloc(buf->bufsize);
     buf->bufend      = buf->bufstart + buf->bufsize;
     buf->gapstart    = buf->bufstart;
     buf->gapend      = buf->bufend;
@@ -124,10 +118,19 @@ int buf_getc(Buf* buf, Sel* sel) {
     return 0;
 }
 
-void buf_putc(Buf* buf, Sel* sel, Rune rune, int fmtopts) {
+void buf_putc(Buf* buf, Sel* sel, int rune, int fmtopts) {
+    Sel lsel = selconvert(buf, sel);
+    selupdate(buf, sel, &lsel);
+}
+
+void buf_puts(Buf* buf, Sel* sel, char* str, int fmtopts) {
     Sel lsel = selconvert(buf, sel);
     selupdate(buf, sel, &lsel);
 }
 
 void buf_last(Buf* buf, Sel* sel) {
 }
+
+void buf_del(Buf* buf, Sel* sel) {
+}
+
